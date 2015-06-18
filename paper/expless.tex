@@ -1,26 +1,5 @@
-%-----------------------------------------------------------------------------
-%
-%               Template for sigplanconf LaTeX Class
-%
-% Name:         sigplanconf-template.tex
-%
-% Purpose:      A template for sigplanconf.cls, which is a LaTeX 2e class
-%               file for SIGPLAN conference proceedings.
-%
-% Guide:        Refer to "Author's Guide to the ACM SIGPLAN Class,"
-%               sigplanconf-guide.pdf
-%
-% Author:       Paul C. Anagnostopoulos
-%               Windfall Software
-%               978 371-2316
-%               paul@windfall.com
-%
-% Created:      15 February 2005
-%
-%-----------------------------------------------------------------------------
 
-
-\documentclass{sigplanconf}
+\documentclass[preprint,authoryear]{sigplanconf}
 
 % The following \documentclass options may be useful:
 
@@ -30,7 +9,7 @@
 % authoryear    To obtain author/year citation style instead of numeric.
 
 \usepackage{amsmath}
-
+\usepackage{lipsum}
 
 \begin{document}
 
@@ -53,23 +32,24 @@
                                   % (paid open-access papers, 
                                   % short abstracts)
 
-\titlebanner{banner above paper title}        % These are ignored unless
-\preprintfooter{short description of paper}   % 'preprint' option specified.
+\titlebanner{DRAFT}        % These are ignored unless
+%% \preprintfooter{short description of paper}   % 'preprint' option specified.
 
-\title{Title Text}
-\subtitle{Subtitle Text, if any}
+\title{Expressionless Weak-Head Normal Forms}
+%% \subtitle{Subtitle Text, if any}
 
-\authorinfo{Name1}
-           {Affiliation1}
-           {Email1}
-\authorinfo{Name2\and Name3}
-           {Affiliation2/3}
-           {Email2/3}
+\authorinfo{Larry Diehl}
+           {Portland State University}
+           {ldiehl@cs.pdx.edu}
+
+\authorinfo{Tim Sheard}
+           {Portland State University}
+           {sheard@cs.pdx.edu}
 
 \maketitle
 
 \begin{abstract}
-This is the text of the abstract.
+\lipsum[2-3]
 \end{abstract}
 
 \category{CR-number}{subcategory}{third-level}
