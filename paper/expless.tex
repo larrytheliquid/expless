@@ -15,6 +15,8 @@
 \def\turn{\vdash}
 \def\conv{\approx}
 
+\newcommand{\fun}[1]{\textmd{#1}}
+
 \begin{document}
 
 \special{papersize=8.5in,11in}
@@ -91,7 +93,10 @@ More text.
 
 The motivation for weak-head normal forms in dependent type theory is
 to strike a balance between simplicity and efficiency in the
-implementation of the type checker.
+implementation of the type checker. 
+
+The rule for dependent application exposes the complexities
+that arise in dependent type checking.
 
 $$
 \infer[]
@@ -101,7 +106,37 @@ $$
   &
   \Gamma \turn a : A
 }
-\qquad
+$$
+
+There are 3 interesting
+constraints in this rule, and all of them have to do with what is
+happening in the *type* position of the typing judgement.
+
+\begin{enumerate}
+\item The type of the function $f$ must be $\Pi~A~B$, thus it must at
+  least be in head-normal form.
+\item The type of $a$ must be equal to the domain of $f$.
+\item The type of the application $f a$ is the substitution of $a$ for
+  the bound variable in $B$.
+\end{enumerate}
+
+Because redexes can appear in dependent types, it is sometimes
+necessary for types to be reduced before a typing rule becomes valid.
+Otherwise, the following 3 problems can violate the aforementioned
+constraints.
+
+\begin{enumerate}
+\item The type of $f$ is a redex like $(\lambda x. x)~(\Pi~A~B)$.
+\item The type of $a$ is $A$, while the codomain of $f$ is a redex like
+$(\lambda x. x)~A$.
+\item Substituting the term $a$ into $B$ can create a redex, resulting
+  in problems 1 and 2 somewhere else in type checking.
+\end{enumerate}
+
+The {\it specification} of typing rules can sweep all of these
+problems under the rug by via a conversion rule.
+
+$$
 \infer[]
   {\Gamma \turn a : B}
 {
@@ -110,6 +145,12 @@ $$
   A \conv B
 }
 $$
+
+The conversion relation $\conv$ considers types to equal after
+reducing redexes. Hence, $\conv$ at least implements $\alpha$-$\beta$
+equality, but it may implement additional forms of equality like $\eta$.
+
+
 
 
 \appendix
