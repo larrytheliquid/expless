@@ -157,7 +157,37 @@ equality, but it may implement additional forms of equality like $\eta$.
 
 \subsection{Implementation}
 
+Dependent type theory can be specified succinctly because the
+conversion relation is nondeterministic. In contrast, an
+implementation of a dependent type checker in a functional language
+must be deterministic. Additionally, the implementation must be
+reasonably efficient to execute. 
 
+Below we consider 4 different implementations of type checking
+function application. The 4 implementations differ in the syntactic
+grammar used for types: First expressions, then normal forms, then
+weak-head normal forms with expression closures, and finally our novel
+weak-head normal forms with expressionless closures.
+
+\paragraph{Expression Types}
+
+Consider the function case of a type checker for expressions below.
+For simplicity, we assume that all terms are annotated enough for us
+to infer types instead of checking them. The input of \texttt{infer} is an expression
+value, and the output is an expression type in a type checking monad.
+
+\begin{verbatim}
+infer : Exp -> TCM Exp
+infer (App f a) = do
+  Pi _A _B <- infer f
+  _A'      <- infer a
+  unless (_A == _A') $
+    throwError "Domain not convertible to argument"
+  return . norm (B `sub` a)
+\end{verbatim}
+
+
+\subsection{Independence}
 
 \appendix
 \section{Appendix Title}
