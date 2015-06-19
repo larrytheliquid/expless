@@ -95,6 +95,11 @@ The motivation for weak-head normal forms in dependent type theory is
 to strike a balance between simplicity and efficiency in the
 implementation of the type checker. 
 
+\subsection{Specification}
+
+Before considering the {\it implementation} of a dependent type checker,
+let's consider the complexities that arise in the
+{\it specification} of dependent typing rules.
 The rule for dependent application exposes the complexities
 that arise in dependent type checking.
 
@@ -110,7 +115,7 @@ $$
 
 There are 3 interesting
 constraints in this rule, and all of them have to do with what is
-happening in the *type* position of the typing judgement.
+happening in the {\it type} position of the typing judgement.
 
 \begin{enumerate}
 \item The type of the function $f$ must be $\Pi~A~B$, thus it must at
@@ -133,7 +138,7 @@ $(\lambda x. x)~A$.
   in problems 1 and 2 somewhere else in type checking.
 \end{enumerate}
 
-The {\it specification} of typing rules can sweep all of these
+The specification of typing rules can sweep all of these
 problems under the rug by via a conversion rule.
 
 $$
@@ -150,6 +155,7 @@ The conversion relation $\conv$ considers types to equal after
 reducing redexes. Hence, $\conv$ at least implements $\alpha$-$\beta$
 equality, but it may implement additional forms of equality like $\eta$.
 
+\subsection{Implementation}
 
 
 
