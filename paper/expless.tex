@@ -8,8 +8,12 @@
 % 11pt          To set in 11-point type instead of 9-point.
 % authoryear    To obtain author/year citation style instead of numeric.
 
-\usepackage{amsmath}
 \usepackage{lipsum}
+\usepackage{amsmath}
+\usepackage{proof}
+
+\def\turn{\vdash}
+\def\conv{\approx}
 
 \begin{document}
 
@@ -83,161 +87,30 @@ Lots of text.
 
 More text.
 
+\section{Dependent Type Checking}
+
+The motivation for weak-head normal forms in dependent type theory is
+to strike a balance between simplicity and efficiency in the
+implementation of the type checker.
+
+$$
+\infer[]
+  {\Gamma \turn f~a : B[a]}
+{
+  \Gamma \turn f : \Pi~A~B
+  &
+  \Gamma \turn a : A
+}
+\qquad
+\infer[]
+  {\Gamma \turn a : B}
+{
+  \Gamma \turn a : A
+  &
+  A \conv B
+}
+$$
 
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
-
-Lots of text.
 
 \appendix
 \section{Appendix Title}
