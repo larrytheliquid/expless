@@ -16,6 +16,7 @@
 \def\conv{\approx}
 
 \newcommand{\fun}[1]{\textmd{#1}}
+\newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
 \begin{document}
 
@@ -173,11 +174,13 @@ weak-head normal forms with expressionless closures.
 
 Consider the function case of a type checker for expressions below.
 For simplicity, we assume that all terms are annotated enough for us
-to infer types instead of checking them. The input of \texttt{infer} is an expression
+to infer types instead of checking them. Additionally, the terms are
+in de Bruijn notation so we do not need to deal with $\alpha$-renaming.
+The input of \texttt{infer} is an expression
 value, and the output is an expression type in a type checking monad.
 
 \begin{verbatim}
-infer : Exp -> TCM Exp
+infer :: Exp -> TCM Exp
 infer (App f a) = do
   Pi _A _B <- infer f
   _A'      <- infer a
@@ -185,6 +188,22 @@ infer (App f a) = do
     throwError "Domain not convertible to argument"
   return . norm (B `sub` a)
 \end{verbatim}
+
+Whether or not the code above is correct depends on the rest of the
+implementation of \texttt{infer}, what the conversion function
+\texttt{(==)} does, and what the normalization function
+\texttt{norm} does. Because the grammar of expressions is so flexible,
+we can never be sure if a given expression is in normal form,
+weak-head normal form, or if the head position is a redex.
+
+The easiest way to get the implementation correct is to make
+\texttt{norm} compute to full normal form. This way,
+conversion \texttt{(==)} can be a derived syntactic equality. The
+(albeit more complex) implementation makes \texttt{norm} compute only
+to weak-head normal form, and conversion \texttt{(==)} first check
+syntactic equality, and then compute away redexes if syntactic
+equality fails.
+
 
 
 \subsection{Independence}
