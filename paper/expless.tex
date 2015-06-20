@@ -202,9 +202,16 @@ conversion \texttt{(==)} can be a derived syntactic equality. The
 (albeit more complex) implementation makes \texttt{norm} compute only
 to weak-head normal form, and conversion \texttt{(==)} first check
 syntactic equality, and then compute away redexes if syntactic
-equality fails.
+equality fails. Whatever normal form we compute to, we need to make
+sure that all cases of \texttt{infer} do it so that we can
+successfully match against \texttt{Pi \_A \_B}.
 
-
+Why is it a good idea to prefer weak-head normal forms over normal
+forms? The normal forms can get quite large! Consider type checking
+the application case where the type of the argument (\texttt{\_A'})
+and the domain (\texttt{\_A}) are the finite set type
+\texttt{Fin (2 ** 1024)}. Computing both of these types to normal form
+and comparing them syntactially is not practical.
 
 \subsection{Independence}
 
