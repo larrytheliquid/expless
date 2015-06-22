@@ -164,7 +164,7 @@ implementation of a dependent type checker in a functional language
 must be deterministic. Additionally, the implementation must be
 reasonably efficient to execute. 
 
-Below we consider 4 different implementations of type checking
+Below we consider 4 different Haskell implementations of type checking
 function application. The 4 implementations differ in the syntactic
 grammar used for types: First expressions, then normal forms, then
 weak-head normal forms with expression closures, and finally our novel
@@ -239,7 +239,8 @@ infer (App f a) = do
   _A'      <- infer a
   unless (_A == _A') $
     throwError "Domain not equal to argument"
-  return (B `hsub` norm a)
+  a' <- norm a
+  return (B `hsub` a')
 \end{verbatim}
 
 There are three major benefits we get by having grammatically enforced
@@ -259,8 +260,95 @@ with a minimal number of cases.
   checker!
 \end{enumerate}
 
-The last benefit of normal form types needs more explaining. 
+The last benefit of normal form types, which we call the
+ {\it independence} property, needs more explaining. Think of
+the expressions as a minimal surface language, and the
+normal forms as a core language. The only expression constructors that we
+need are variables, functions, and applications. Normal forms have the
+same constructors, but also constructors for the types, introduction,
+and elimination rules of all non-function types in the languages (e.g.
+booleans, natural numbers, lists, trees, products, sums, etc).
 
+\begin{verbatim}
+data Exp = Var Int | Lam (Bind Exp) | App Exp Exp
+
+data Nf = Type | Nat | Pi Nf (Bind Nf)
+  | Zero | Suc Nf | Lam (Bind Nf) | Ne Ne
+
+data Ne = Var Int | App Ne Nf
+  | ElimNat (Bind Nf) Nf (Bind2 Nf) Ne
+\end{verbatim}
+
+How is it possible to have such a small expression grammar? Type
+formers, constructors, and eliminators for all other types can be
+exposed as definitions in an initial environment. If a normal form
+primitive has multiple arguments, it can be wrapped with lambdas. This
+means that a primitive like \texttt{Suc} is exposed as a variable
+whose type is \texttt{Nat => Nat}, so users can even partially apply
+them instead of needing to use the fully-applied primitives. 
+
+\begin{verbatim}
+zeroT = Nat
+zero = Zero
+
+sucT = Nat :=> Nat
+suc = Lam (Bind (Suc (Var 0)))
+
+elimNatT = Pi (Nat :=> Type)
+  (Bind (Nat
+     :=> Pi Nat (Bind (App (Var 1) (Var 0)
+            :=> App (Var 1) (Suc (Var 0))))
+     :=> Pi Nat (Bind (App (Var 1) (Var 0)))
+  ))
+elimNat = Lam (Bind (Lam (Bind (Lam (Bind
+  ElimNat
+    (Bind (Var 1 `App` Var 0))
+    (Var 1)
+    (Bind2 (Var 4 `App` Var 0 `App` Var 1))
+    (Var 3)
+  )))))
+
+initCtx = [zeroT, sucT, elimNatT]
+initEnv = [zero, suc, elimNat]
+\end{verbatim}
+
+The initial context \texttt{initCtx} contains types for all
+non-$\Pi$ primitive constructions, and is used by \texttt{infer} in the
+variable case.
+The initial environment \texttt{initEnv} contains values for all
+non-$\Pi$ primitive constructions, and is used by \texttt{norm} in the
+variable case.
+
+So what have we achieved by using this technique of embedding primitives
+in an initial context and environment? Now our type checker
+(\texttt{infer}) and our normalizer (\texttt{norm}) only need to
+handle 3 cases, one for each constructor in the expression grammar!
+This is quite nice, as a dependent type checker gets complicated
+quickly as you add new feature. For example, if we added
+Matita-style~\cite{TODO} elaboration of implicit arguments to
+metavariables and unification problems, we would only need to
+implement it for 3 cases of our \texttt{Exp} grammar.
+Furthermore, changes to our primitives no longer require changes to
+the type checker.
+
+\paragraph{WHNF Types with Expressions}
+
+So far we have seen a dependent type checker that uses
+expression types, which may be done efficiently or inefficiently but
+has no grammatical correctness properties, and a checker that uses
+normal form types, which is inefficient but has grammatically enforced
+correctness properties.
+
+Recall that in the land of expression types
+what we had in mind to make type checking reasonably efficient is to
+first compare types for syntactic equality before reducing a redex.
+A popular way to do this {\it with} grammatically enforced correctness
+properties is to implement an environment machine evaluator. Therein
+an expression evalutes to a WHNF value, where constructor heads
+(like \texttt{Suc}) store an environment along with an unevaluated
+expression. The environment only contains WHNF's for all free
+variables in the expression, but not for binding positions (like the
+\texttt{Lam} body or the \texttt{Pi} codomain).
 
 \subsection{Independence}
 
@@ -289,11 +377,4 @@ P. Q. Smith, and X. Y. Jones. ...reference text...
 
 
 \end{document}
-
-%                       Revision History
-%                       -------- -------
-%  Date         Person  Ver.    Change
-%  ----         ------  ----    ------
-
-%  2013.06.29   TU      0.1--4  comments on permission/copyright notices
 
