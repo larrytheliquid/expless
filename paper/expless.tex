@@ -198,7 +198,7 @@ weak-head normal form, or if the head position is a redex.
 
 The easiest way to get the implementation correct is to make
 \texttt{norm} compute to full normal form. This way,
-conversion \texttt{(==)} can be a derived syntactic equality. The
+conversion \texttt{(==)} can be a simple syntactic equality. The
 (albeit more complex) implementation makes \texttt{norm} compute only
 to weak-head normal form, and conversion \texttt{(==)} first check
 syntactic equality, and then compute away redexes if syntactic
@@ -208,10 +208,59 @@ successfully match against \texttt{Pi \_A \_B}.
 
 Why is it a good idea to prefer weak-head normal forms over normal
 forms? The normal forms can get quite large! Consider type checking
-the application case where the type of the argument (\texttt{\_A'})
+the application case where both the type of the argument (\texttt{\_A'})
 and the domain (\texttt{\_A}) are the finite set type
 \texttt{Fin (2 ** 1024)}. Computing both of these types to normal form
-and comparing them syntactially is not practical.
+and before comparing them is not practical, while comparing the
+terms with the redexes still present is reasonable.
+
+\paragraph{Normal Form Types}
+
+As mentioned above, computing to full normal form is not practical for
+implementing a dependent type checker. Nevertheless, let us consider
+the advantages obtained by having grammatically enforced normal form
+types.
+
+Below is an \texttt{infer} function that takes in an expression
+and produces a type in normal form. The conversion function
+\texttt{(==)} is just syntactic equality, and definition looks like
+the expression version, except for the last line. In the expression
+version we first syntactially substitute the argument \texttt{a} into
+the codomain \texttt{B}, and then normalize the result. However,
+syntactic substitution can create a redex, so it is not a well-formed
+operation on normal forms. Instead, we first normalize the argument,
+and then hereditarily substitute~\cite{TODO} into the codomain, which
+computes away any redex created while substituting.
+
+\begin{verbatim}
+infer :: Exp -> TCM Nf
+infer (App f a) = do
+  Pi _A _B <- infer f
+  _A'      <- infer a
+  unless (_A == _A') $
+    throwError "Domain not equal to argument"
+  return (B `hsub` norm a)
+\end{verbatim}
+
+There are three major benefits we get by having grammatically enforced
+normal forms types. The first two advantages have to do with
+simplicity in the implementation, and allows us to have a type checker
+with a minimal number of cases.
+
+\begin{enumerate}
+\item Because the type signature of \texttt{infer} enforces that it
+  returns a normal form, our pattern match against \texttt{Pi \_A \_B}
+  always works (we can't forget to compute to normal form in some case
+  of \texttt{infer}).
+\item The conversion function of \texttt{(==)} can be a simple
+  equality check, which can even be derived by Haskell.
+\item The grammar of expressions and normal forms are defined
+  independently, which can be exploited to implement a very small type
+  checker!
+\end{enumerate}
+
+The last benefit of normal form types needs more explaining. 
+
 
 \subsection{Independence}
 
