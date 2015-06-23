@@ -360,8 +360,9 @@ data Exp = EType | ENat | EPi Exp (Bind Exp)
 
 type Env = [Wh]
 
-data Wh = Type | Nat | Fin Env Exp | Pi Env Exp (Bind Exp)
-  | Zero | Suc Env Exp | Lam Env (Bind Exp) | Ne Ne
+data Wh = Type | Nat | Fin Env Exp
+  | Pi Env Exp (Bind Exp) | Zero
+  | Suc Env Exp | Lam Env (Bind Exp) | Ne Ne
 
 data Ne = ...
 \end{verbatim}
@@ -389,8 +390,14 @@ syntactic equality before reducing closures. Finally, the returned
 type of \texttt{\_B} is evaluated in the extension of the environment
 by the evaluation of the argument \texttt{a} in the empty environment.
 
-
-
+This environment evaluator approach has the advantage of grammatically
+enforcing WHNF in types, unlike expression types, but still can
+perform convertibility efficiently. Imagine that we extend our
+language with the type of finite sets (\texttt{Fin Env Exp}), which is
+indexed by a natural number. If \texttt{(eval \_A env)} and \texttt{\_A'}
+are both \texttt{(Fin [2,1024] (Var 0 ** Var 1))}, then we get a
+tremendous speedup by comparing them for syntactic equality before evaluating
+the closure and then comparing.
 
 \subsection{Independence}
 
