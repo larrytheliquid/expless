@@ -153,8 +153,8 @@ $$
 $$
 
 The conversion relation $\conv$ considers types to equal after
-reducing redexes. Hence, $\conv$ at least implements $\alpha$-$\beta$
-equality, but it may implement additional forms of equality like $\eta$.
+reducing redexes. Hence $\conv$ is at least $\alpha$-$\beta$
+equality, but it may enforce additional forms of equality, such as $\eta$.
 
 \subsection{Implementation}
 
@@ -186,7 +186,7 @@ infer (App f a) = do
   _A'      <- infer a
   unless (_A == _A') $
     throwError "Domain not convertible to argument"
-  return . norm (B `sub` a)
+  return . norm (_B `sub` a)
 \end{verbatim}
 
 Whether or not the code above is correct depends on the rest of the
@@ -240,7 +240,7 @@ infer (App f a) = do
   unless (_A == _A') $
     throwError "Domain not equal to argument"
   a' <- norm a
-  return (B `hsub` a')
+  return (_B `hsub` a')
 \end{verbatim}
 
 There are three major benefits we get by having grammatically enforced
@@ -270,7 +270,7 @@ and elimination rules of all non-function types in the languages (e.g.
 booleans, natural numbers, lists, trees, products, sums, etc).
 
 \begin{verbatim}
-data Exp = Var Int | Lam (Bind Exp) | App Exp Exp
+data Exp = EVar Int | ELam (Bind Exp) | EApp Exp Exp
 
 data Nf = Type | Nat | Pi Nf (Bind Nf)
   | Zero | Suc Nf | Lam (Bind Nf) | Ne Ne
@@ -339,9 +339,9 @@ has no grammatical correctness properties, and a checker that uses
 normal form types, which is inefficient but has grammatically enforced
 correctness properties.
 
-Recall that in the land of expression types
-what we had in mind to make type checking reasonably efficient is to
-first compare types for syntactic equality before reducing a redex.
+Recall that in the land of expression types we wanted to
+make type checking reasonably efficient by
+comparing types for syntactic equality before reducing a redex.
 A popular way to do this {\it with} grammatically enforced correctness
 properties is to implement an environment machine evaluator. Therein
 an expression evalutes to a WHNF value, where constructor heads
@@ -349,6 +349,48 @@ an expression evalutes to a WHNF value, where constructor heads
 expression. The environment only contains WHNF's for all free
 variables in the expression, but not for binding positions (like the
 \texttt{Lam} body or the \texttt{Pi} codomain).
+
+We are free to choose which terms we would like to contain closures.
+For example, maybe we only want closures at binding positions. 
+
+\begin{verbatim}
+
+data Exp = EType | ENat | EPi Exp (Bind Exp)
+  | EZero | ESuc Exp | ELam (Bind Exp) | ...
+
+type Env = [Wh]
+
+data Wh = Type | Nat | Fin Env Exp | Pi Env Exp (Bind Exp)
+  | Zero | Suc Env Exp | Lam Env (Bind Exp) | Ne Ne
+
+data Ne = ...
+\end{verbatim}
+
+In the weak-head normal form type (\texttt{Wh}) above, all
+constructors with arguments contain a closed environment of WHNF's,
+along with unevaluated expressions delayed by the closure. 
+Now let's see how \texttt{infer} works with grammatically enforced
+WHNF's.
+
+\begin{verbatim}
+infer :: Exp -> TCM Wh
+infer (EApp f a) = do
+  Pi env _A (Bind _B) <- infer f
+  _A' <- infer a
+  unless (eval _A env == _A') $
+    throwError "Domain not convertible to argument"
+  return (eval _B (eval a []):env)
+\end{verbatim}
+
+Firstly, the domain \texttt{\_A} must first be evaluated before comparing it
+with the argument type \texttt{\_A'}. Secondly, converitbility
+(\texttt{(==)}) is now an efficient operation that checks for
+syntactic equality before reducing closures. Finally, the returned
+type of \texttt{\_B} is evaluated in the extension of the environment
+by the evaluation of the argument \texttt{a} in the empty environment.
+
+
+
 
 \subsection{Independence}
 
