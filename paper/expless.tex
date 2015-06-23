@@ -354,7 +354,6 @@ We are free to choose which terms we would like to contain closures.
 For example, maybe we only want closures at binding positions. 
 
 \begin{verbatim}
-
 data Exp = EType | ENat | EPi Exp (Bind Exp)
   | EZero | ESuc Exp | ELam (Bind Exp) | ...
 
@@ -399,7 +398,51 @@ are both \texttt{(Fin [2,1024] (Var 0 ** Var 1))}, then we get a
 tremendous speedup by comparing them for syntactic equality before evaluating
 the closure and then comparing.
 
-\subsection{Independence}
+\paragraph{WHNF Types without Expressions}
+
+Our proposal is to combine the efficiency benefits of WHNF environment
+evaluators, with the software engineering benefits begot by
+normal forms defined independentlyn of expressions. In order to do
+this, we use the 3 constructor expression grammar from the normal
+forms section. Then, we take the \texttt{Wh} grammar from the WHNF
+with expressions section, but replace all expressions in the grammar
+with a \texttt{Wh}.
+
+\begin{verbatim}
+data Exp = EVar Int | ELam (Bind Exp) | EApp Exp Exp
+
+type Env = [Wh]
+
+data Wh = Type | Nat | Fin Env Wh
+  | Pi Env Wh (Bind Wh) | Zero
+  | Suc Env Wh | Lam Env (Bind Wh) | Ne Ne
+
+data Ne = ...
+\end{verbatim}
+
+The \texttt{infer} function is similar to the WHNF with expressions
+version, except we rename \texttt{eval} to \texttt{hsub} (which is now a
+weak-head hereditary substitution). Additionally, the argument
+\texttt{a} is now normalized in the monad, so its variables can be
+looked up in an initial environment similar to the one in the normal
+forms section.
+
+\begin{verbatim}
+infer :: Exp -> TCM Wh
+infer (EApp f a) = do
+  Pi env _A (Bind _B) <- infer f
+  _A' <- infer a
+  unless (hsub _A env == _A') $
+    throwError "Domain not convertible to argument"
+  a'  <- norm a
+  return (hsub _B a':env)
+\end{verbatim}
+
+Just like in the normal forms section, because our grammar is so
+small, functions on our surface language of expressions (like
+\texttt{infer} and \texttt{norm}) only need to handle 3 cases.
+However, because we do not reduce to full normal form, we still can
+implement a reasonable efficient type checker.
 
 \appendix
 \section{Appendix Title}
