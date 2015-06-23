@@ -444,10 +444,13 @@ small, functions on our surface language of expressions (like
 However, because we do not reduce to full normal form, we still can
 implement a reasonable efficient type checker.
 
-\appendix
-\section{Appendix Title}
-
-This is the text of the appendix, if you need one.
+Finally, in the previous sections we assume that all terms are
+inferable to simplify the presentation. In reality not all of our expressions
+are inferable. To remedy the situation, we could switch the
+expressions to a bidirectional~\cite{TODO} syntax, and have both a \texttt{check}
+function in addition to \texttt{infer}. Note that doing this is much
+easier when our expression grammar only has terms for $\Pi$ types, as
+opposed to terms for all types in the WHNF core language!
 
 \acks
 
@@ -466,6 +469,11 @@ Acknowledgments, if needed.
 P. Q. Smith, and X. Y. Jones. ...reference text...
 
 \end{thebibliography}
+
+\appendix
+\section{Appendix Title}
+
+This is the text of the appendix, if you need one.
 
 
 \end{document}
