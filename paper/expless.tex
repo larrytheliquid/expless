@@ -18,6 +18,8 @@
 \newcommand{\fun}[1]{\textmd{#1}}
 \newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
+\newcommand{\refsec}[1]{Section \ref{sec:#1}}
+
 \begin{document}
 
 \special{papersize=8.5in,11in}
@@ -108,9 +110,33 @@ drastically shrink the size of the type checker and normalizer by
 making expressions only contain values for $\Pi$ types, and exposing
 values of all other types as WHNF's in an initial environment.
 
+The motivation for our work is to implement an obviously correct,
+efficient, and small dependent type checker by exploiting
+expressionless weak-head normal forms. We will describe this
+motivation in detail in \refsec{motivation}. However, we are also
+interested in formalizing the consistency of such a dependent type
+theory. While such a formalization is ongoing work, our
+{\bf main contributions} are formalized for G{\"o}del's System T:
+
+\begin{itemize}
+\item A grammar of expressionless WHNF's containing values for all
+  types in the language, a small grammar of expressions only
+  containing values for function types, and an initial environment of
+  WHNF's exposing values for non-function types.
+\item A termination proof of normalizing expressions to WHNF, which is
+  a corollary of a weak-head hereditary substitution proof (this
+  normalizer and hereditary substitution would be used in typing rules
+  like application in a dependently typed setting.)
+\item A decidability proof of a weak-head converbility relation that
+  incrementally reduces closures only after a syntactic equality check
+  fails (this converbility relation would be used in the conversion
+  rule in a dependently typed setting.)
+\end{itemize}
+
 %% in the style of Big-Step Normalization by Altenkirch and Chapman
 
 \section{Dependent Type Checking}
+\label{sec:motivation}
 
 The motivation for weak-head normal forms in dependent type theory is
 to strike a balance between simplicity and efficiency in the
