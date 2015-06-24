@@ -71,24 +71,44 @@ keyword1, keyword2
 
 \section{Introduction}
 
-The text of the paper begins here.
+An implementation of a functional programming language can choose
+compromises between {\it obvious correctness} and {\it efficiency}. Our motivation is
+finding a good collection of compromises for the
+implementation of a Dependently Typed Programming Language (DTPL).
+One important design choice when implementing a DTPL is what syntactic
+grammars of terms should be used for the surface language and any
+intermediate languages. The surface language will always be
+expressions, as users must be able to write programs containing
+redexes.
 
-Lots of text.
+We can choose to compromise {\it obvious correctness} by making
+the type checker take an expression as a type,
+and the normalizer return an expression as a type. Expressions
+make no grammatical guarantees about having removes redexes, so we
+must constantly worry about whether a term has been reduced.
+Alternatively, we can choose to compromise {\it efficiency} by making
+the type checker take a normal form as a type, and the normalizer
+return a normal form as a type. Although a grammar of normal forms can
+guarantee the lack of redexes, it comes at the cost of prematurely
+fully evaluating terms with expensive compuations.
 
-More text.
+A popular way to reconcile
+{\it obvious correctness} and {\it efficiency} is to make
+the type checker and normalizer use a
+Weak-Head Normal Form (WHNF) grammar. Head constructors of a WHNF
+contain a closure, often represented as unevaluated expressions and the
+environment of WHNF's captured by the closure. Unfortunately, this
+introduces a new compromise of {\it dependence}, namely the dependence
+of the WHNF grammar on the expression grammar.
 
-Lots of text.
+In this work we explore the idea of making closures
+{\it expressionless}. That is, a WHNF closure contains an environment,
+along with other WHNF's rather than expressions. This allows us to
+drastically shrink the size of the type checker and normalizer by
+making expressions only contain values for $\Pi$ types, and exposing
+values of all other types as WHNF's in an initial environment.
 
-More text.
-
-
-Lots of text.
-
-More text.
-
-Lots of text.
-
-More text.
+%% in the style of Big-Step Normalization by Altenkirch and Chapman
 
 \section{Dependent Type Checking}
 
