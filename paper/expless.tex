@@ -139,7 +139,7 @@ theory. While such a formalization is ongoing work, our
 \label{sec:motivation}
 
 The motivation for weak-head normal forms in dependent type theory is
-to strike a balance between simplicity and efficiency in the
+to strike a balance between obvious correctness and efficiency in the
 implementation of the type checker. 
 
 \subsection{Specification}
@@ -199,7 +199,7 @@ $$
 $$
 
 The conversion relation $\conv$ considers types to equal after
-reducing redexes. Hence $\conv$ is at least $\alpha$-$\beta$
+reducing redexes and performing capture-avoiding substitutions. Hence $\conv$ is at least $\alpha$-$\beta$
 equality, but it may enforce additional forms of equality, such as $\eta$.
 
 \subsection{Implementation}
