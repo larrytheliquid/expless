@@ -562,7 +562,7 @@ function in addition to \texttt{infer}. Note that doing this is much
 easier when our expression grammar only has terms for $\Pi$ types, as
 opposed to terms for all types in the WHNF core language!
 
-\section{Expressionless WHNF Properties}
+\section{Expressionless WHNF Architecture}
 
 Below we explain what an expressionless WHNF
 architecture means for G{\"o}del's System T.
@@ -571,6 +571,89 @@ wish to hold for the system, and motivate the properties by their roles in a
 dependently typed setting. Subsequent sections present proofs of
 that these properties hold, and additional lemmas needed for those
 proofs.
+
+\subsection{Syntactic Grammars}
+
+An expressionless WHNF architecture is defined by the particular
+choices made when defining syntactic grammars for various term
+representations. There are 3 term representations: an outermost
+expression grammar, an intermediate weak head normal form grammar, and
+an innermost normal form grammar. Unlike other term
+representation architectures that include weak head normal forms, none
+of our term grammars depend on each another.
+
+\paragraph{Expressions}
+
+In a WHNF architecture the grammar of expressions represents a user
+facing surface language. Because many algorithms are written for the
+surface langauge, such as type checking, it is beneficial to make it
+small. To this end, expressions only contain values for function types
+(lambdas and application), and values for all other types are
+referenced using variables.
+
+\begin{grammar}
+<exp> ::= <var> 
+\alt `\(\lambda\)' <ebind>
+\alt <exp> <exp>
+
+<ebind> ::= <exp> 
+\end{grammar}
+
+We use de Bruijn notation for variables, and our grammar
+explicitly marks where binding positions occur (in the body of the
+lambda). Although this has no syntactic effect, in our formal
+development such binding positions are used to ensure that de Bruijn
+terms are well-scoped.
+
+Although our expression grammar only represents the STLC, users may
+program with natural numbers from System T by using variables
+referring to primitives in an initial environment. Primitives with
+multiple arguments are represented as functions, and their arguments
+can be applied using the application constructor of expressions.
+
+For example, a user may define the number 2 as follow:
+
+\begin{align*}
+&\con{two} : \nat\\
+&\con{two} = \suc{(\suc{\zero})}
+\end{align*}
+
+The expression grammar does not include a zero constructor or a
+successor constructor, but there is an initial environment with a
+variable ``zero'', typed as a natural number, and a variable ``suc'',
+typed as a function from a natural number to a natural number.
+
+\begin{align*}
+&\con{zero} : \nat\\
+&\con{suc} : \nat \arr \nat
+\end{align*}
+
+In the simply typed setting our types aren't expressive enough to
+encode the primitive recursor this way, because it has a univerally
+quantified return type. However, we can still add fully instantiated
+mathematical primitives, or a primitive recursor specialized to
+returning natural numbers.
+
+\begin{align*}
+&\con{plus} : \nat \arr \nat \arr \nat\\
+&\con{mult} : \nat \arr \nat \arr \nat\\
+&\con{numrec} : \nat \arr \nat \arr (\nat \arr \nat) \arr \nat
+\end{align*}
+
+Note that this limitation would be removed if we were to apply the
+expressionless WHNF architecture to a dependently typed setting, or
+System F, where universal quantification is possible.
+\footnote{In System F our expression grammar would need two
+  additional constructors for packing and unpacking universally
+  quantified values.}
+
+\begin{align*}
+&//~ \con{DTT}\\
+&\con{rec} : (C \asc \con{Type}) \arr \nat \arr C \arr (C \arr C) \arr C\\
+&//~ \con{System F}\\
+&\con{rec} : \forall C.~ \nat \arr C \arr (C \arr C) \arr C
+\end{align*}
+
 
 \begin{figure}[t!]
 \caption{
