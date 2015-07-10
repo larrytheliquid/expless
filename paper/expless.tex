@@ -44,19 +44,19 @@
 
 \newcommand{\typr}[2]{\Gamma \turn{R}  #1 \asc #2}
 
-\newcommand{\type}[2]{\Gamma \turn{E}  #1 \asc #2}
+\newcommand{\type}[2]{\ctype{\Gamma}{#1}{#2}}
 \newcommand{\ctype}[3]{#1 \turn{E}  #2 \asc #3}
 
-\newcommand{\typnf}[2]{\Gamma \turn{Nf}  #1 \asc #2}
+\newcommand{\typnf}[2]{\ctypnf{\Gamma}{#1}{#2}}
 \newcommand{\ctypnf}[3]{#1 \turn{Nf}  #2 \asc #3}
 
 \newcommand{\typne}[2]{\Gamma \turn{Ne}  #1 \asc #2}
 
 \newcommand{\typk}[3]{\Gamma \turn{K}  #1 \asc #2 \implies #3}
 
-\newcommand{\typv}[1]{\Phi \turnstyle  #1 \asc \Gamma}
+\newcommand{\typv}[2]{\Phi \turn{V}  #1 \asc #2}
 
-\newcommand{\typwh}[2]{\Gamma \turn{Wh}  #1 \asc #2}
+\newcommand{\typwh}[2]{\ctypwh{\Gamma}{#1}{#2}}
 \newcommand{\ctypwh}[3]{#1 \turn{Wh}  #2 \asc #3}
 
 \newcommand{\typnu}[2]{\Gamma \turn{Nu}  #1 \asc #2}
@@ -748,6 +748,7 @@ $$
 Typing rules for \textit{weak head normal forms} and
 \textit{weak head neutral terms} of G{\"o}del's System T.
 }
+
 $$
 \infer
   []
@@ -761,17 +762,6 @@ $$
   {\typwh{a}{A}}
 {
   \typnu{a}{A}
-}
-$$
-
-$$
-\infer
-  []
-  {\typk{\sigma / b}{A}{B}}
-{
-  \typv{\sigma}
-  &
-  \ctypwh{\Phi, A}{b}{B}
 }
 $$
 
@@ -818,6 +808,34 @@ $$
   \typwh{c_z}{C}
   &
   \typk{c_s}{C}{C}
+}
+$$
+
+$$
+\infer
+  []
+  {\typv{\emp}{\emp}}
+{
+}
+\quad
+\infer
+  []
+  {\typv{\sigma, a}{\Gamma, A}}
+{
+  \typv{\sigma}{\Gamma}
+  &
+  \ctypwh{\Phi}{a}{A}
+}
+$$
+
+$$
+\infer
+  []
+  {\typk{\sigma / b}{A}{B}}
+{
+  \typv{\sigma}{\Gamma}
+  &
+  \ctypwh{\Phi, A}{b}{B}
 }
 $$
 
