@@ -33,6 +33,10 @@
 \def\nat{\mathbb{N}}
 \def\emp{\epsilon}
 
+\def\zero{\con{zero}}
+\newcommand{\suc}[1]{\con{suc}~#1}
+\newcommand{\rec}[3]{\con{rec}~#1~\con{of}~#2~\con{else}~#3}
+
 \newcommand{\con}[1]{\textmd{#1}}
 \newcommand{\fun}[1]{\textmd{#1}}
 
@@ -42,6 +46,11 @@
 
 \newcommand{\type}[2]{\Gamma \turn{E}  #1 \asc #2}
 \newcommand{\ctype}[3]{#1 \turn{E}  #2 \asc #3}
+
+\newcommand{\ctypnf}[3]{#1 \turn{Nf}  #2 \asc #3}
+\newcommand{\typnf}[2]{\Gamma \turn{Nf}  #1 \asc #2}
+
+\newcommand{\typne}[2]{\Gamma \turn{Ne}  #1 \asc #2}
 
 \newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
@@ -630,9 +639,9 @@ exposed as variables referring to values in an initial environment.
 $$
 \infer
   []
-  {\type{x}{A}}
+  {\type{a}{A}}
 {
-  \typr{x}{A}
+  \typr{a}{A}
 }
 \quad
 \infer
@@ -652,6 +661,75 @@ $$
   \type{a}{A}
 }
 $$
+\label{fig:type:exp}
+\end{figure}
+
+\begin{figure}[t!]
+\caption{
+Typing rules for \textit{normal forms} and \textit{neutral terms} of G{\"o}del's System T.
+}
+$$
+\infer
+  []
+  {\typne{a}{A}}
+{
+  \typr{a}{A}
+}
+\quad
+\infer
+  []
+  {\typnf{a}{A}}
+{
+  \typne{a}{A}
+}
+$$
+
+$$
+\infer
+  []
+  {\typnf{\lambda b}{A \arr B}}
+{
+  \ctypnf{\Gamma, A}{b}{B}
+}
+\quad
+\infer
+  []
+  {\typne{f~a}{B}}
+{
+  \typne{f}{A \arr B}
+  &
+  \typnf{a}{A}
+}
+$$
+
+$$
+\infer
+  []
+  {\typnf{\zero}{\nat}}
+{
+}
+\quad
+\infer
+  []
+  {\typnf{\suc{n}}{\nat}}
+{
+  \typnf{n}{\nat}
+}
+$$
+
+$$
+\infer
+  []
+  {\typne{\rec{n}{c_z}{c_s}}{C}}
+{
+  \typne{n}{\nat}
+  &
+  \typnf{c_z}{C}
+  &
+  \ctypnf{\Gamma, C}{c_s}{C}
+}
+$$
+
 \label{fig:type:exp}
 \end{figure}
 
