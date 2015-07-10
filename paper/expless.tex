@@ -10,12 +10,35 @@
 
 \usepackage{lipsum}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{proof}
+\usepackage{syntax}
+
+\usepackage{float}
+\floatstyle{boxed}
+\restylefloat{figure}
 
 \def\turn{\vdash}
 \def\conv{\approx}
 
+\def\cross{\times}
+\def\dfn{\triangleq}
+\def\dfun{\mapsto}
+\def\bigstep{\Downarrow}
+\def\arr{\supset}
+\def\marr{\rightarrow}
+\def\app{\cdot}
+\def\lam{\lambda}
+\def\nat{\mathbb{N}}
+\def\emp{\epsilon}
+
+\newcommand{\con}[1]{\textmd{#1}}
 \newcommand{\fun}[1]{\textmd{#1}}
+
+\newcommand{\asc}[1]{:^\con{#1}}
+
+%% \newcommand{\type}[1]{\Gamma \turn  #1}
+
 \newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
 \newcommand{\refsec}[1]{Section \ref{sec:#1}}
@@ -522,7 +545,96 @@ Below we provide an overview of the primary formal properties that we
 wish to hold in an expressionless WHNF architecture for G{\"o}del's
 System T, and motivate the properties by their roles in a
 dependently typed setting. Subsequent sections will present proofs of
-these primary theorems, and the additional lemmas needed for those proofs.
+these primary theorems, and the additional lemmas needed for those
+proofs.
+
+\begin{figure}[t!]
+\caption{
+The syntactic grammar of expressions.
+}
+\begin{grammar}
+<exp> ::= <var> 
+\alt `\(\lambda\)' <ebind>
+\alt <exp> <exp>
+
+<ebind> ::= <exp> 
+\end{grammar}
+\label{fig:gram:exp}
+\end{figure}
+
+\begin{figure}[t!]
+\caption{
+The syntactic grammar of weak head normal forms.
+}
+\begin{grammar}
+<wh> ::= <nu> 
+\alt `zero'
+\alt `suc' <wh>
+\alt `\(\lambda\)' <clos>
+
+<nu> ::= <var> 
+\alt <nu> <wh>
+\alt `rec' <nu> `of' <wh> `else' <clos>
+
+<clos> ::= <env> `/' <wh>
+
+<env> ::= `\(\emp\)'
+\alt <env> `,' <wh>
+\end{grammar}
+\label{fig:gram:wh}
+\end{figure}
+
+\begin{figure}[t!]
+\caption{
+The syntactic grammar of normal forms.
+}
+\begin{grammar}
+<nf> ::= <ne> 
+\alt `zero'
+\alt `suc' <nf>
+\alt `\(\lambda\)' <bind>
+
+<ne> ::= <var> 
+\alt <ne> <nf>
+\alt `rec' <ne> `of' <nf> `else' <bind>
+
+<bind> ::= <nf> 
+\end{grammar}
+\label{fig:gram:nf}
+\end{figure}
+
+\begin{figure}[t!]
+\caption{
+The syntactic grammar of types.
+}
+\begin{grammar}
+<type> ::= `\(\nat\)'
+\alt <type> `\(\arr\)' <type>
+
+<ctx> ::= `\(\emp\)'
+\alt <ctx> `,' <type>
+\end{grammar}
+\label{fig:gram:type}
+\end{figure}
+
+\begin{figure}[t!]
+\caption{
+Typing rules for \textit{expressions} for the Simply Typed Lambda
+Calculus (STLC). Numeric values from G{\"o}del's System T can be
+exposed as variables referring to values in an initial environment.
+}
+$$
+\infer
+  []
+  {B}
+{
+  (f : A \arr B)
+  &
+  (a : A)
+}
+$$
+\label{fig:type:exp}
+\end{figure}
 
 \acks
 
