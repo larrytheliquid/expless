@@ -595,10 +595,10 @@ its typing rules are in \reffig{type:exp}.
 
 \begin{grammar}
 <exp> ::= <var> 
-\alt `\(\lambda\)' <ebind>
+\alt `\(\lambda\)' <bind-e>
 \alt <exp> <exp>
 
-<ebind> ::= <exp> 
+<bind-e> ::= <exp> 
 \end{grammar}
 
 We use de Bruijn notation for variables, and our grammar
@@ -669,13 +669,13 @@ its typing rules are in \reffig{type:nf}.
 <nf> ::= <ne> 
 \alt `zero'
 \alt `suc' <nf>
-\alt `\(\lambda\)' <bind>
+\alt `\(\lambda\)' <bind-nf>
 
 <ne> ::= <var> 
 \alt <ne> <nf>
-\alt `rec' <ne> `of' <nf> `else' <bind>
+\alt `rec' <ne> `of' <nf> `else' <bind-nf>
 
-<bind> ::= <nf> 
+<bind-nf> ::= <nf> 
 \end{grammar}
 
 Once again we use de Bruijn notation for variables, but note that
@@ -686,11 +686,16 @@ function there instead, but we prefer to keep the typing rules
 modular (meaning that the natural number elimination rule does not
 depend on the function type).
 
+\paragraph{Weak Head Normal Forms}
 
-\begin{figure}[t!]
-\caption{
-The syntactic grammar of weak head normal forms.
-}
+We use a closure-based representation of weak head normal forms. What
+sets our apart from others is that it is {\it expressionless}. The
+weak head grammar is similar to the normal form grammar, except
+binding positions contain closures. A closure is an environment of
+closed-over weak head normal forms, and a weak head normal form
+(rather than an expression). The grammar of weak head normal forms is below, and
+its typing rules are in \reffig{type:wh}.
+
 \begin{grammar}
 <wh> ::= <nu> 
 \alt `zero'
@@ -701,13 +706,15 @@ The syntactic grammar of weak head normal forms.
 \alt <nu> <wh>
 \alt `rec' <nu> `of' <wh> `else' <clos>
 
-<clos> ::= <env> `/' <wh>
+<clos> ::= <env> `/' <bind-wh>
+
+<bind-wh> ::= <wh> 
 
 <env> ::= `\(\emp\)'
 \alt <env> `,' <wh>
 \end{grammar}
-\label{fig:gram:wh}
-\end{figure}
+
+
 
 \begin{figure}[t!]
 \caption{
