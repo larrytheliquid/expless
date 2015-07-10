@@ -44,7 +44,7 @@
 \titlebanner{DRAFT}        % These are ignored unless
 %% \preprintfooter{short description of paper}   % 'preprint' option specified.
 
-\title{Expressionless Weak-Head Normal Forms}
+\title{Expressionless Weak Head Normal Forms}
 %% \subtitle{Subtitle Text, if any}
 
 \authorinfo{Larry Diehl}
@@ -62,7 +62,7 @@ The grammars used for the surface language and core language of a lambda
 calculus can enforce correctness properties and guide an efficient
 implementation. A common approach to implementing a dependently typed
 language with an efficient incremental conversion rule is to use
-weak-head normal forms (WHNF's), where head constructors contain a closure
+weak head normal forms (WHNF's), where head constructors contain a closure
 composed of an environment of WHNF's and an unevaluated expression. In
 our work we explore the idea of removing the dependency of WHNF's on
 expressions by making closures contain an environment and a WHNF
@@ -70,7 +70,7 @@ expressions by making closures contain an environment and a WHNF
 
 Our main contributions are formalizations
 of such a programming language architecture for Godel's System T,
-namely termination of a weak-head environment-based evaluator, and
+namely termination of a weak head environment-based evaluator, and
 decidability of an incremental conversion relation. We regard this
 formal development as a stepping stone towards towards implementing
 similar expressionless WHNF architectures for Dependent Type Theory (DTT).
@@ -84,15 +84,10 @@ can be expanded in the future to prove the consistency of such a
 minimal dependent type checker implementation.
 \end{abstract}
 
-\category{CR-number}{subcategory}{third-level}
-
-% general terms are not compulsory anymore, 
-% you may leave them out
-\terms
-term1, term2
+\category{D.3.1}{Programming Languages}{Formal Definitions and Theory}
 
 \keywords
-keyword1, keyword2
+normal form, closure, termination
 
 \section{Introduction}
 
@@ -120,7 +115,7 @@ fully evaluating terms with expensive compuations.
 A popular way to reconcile
 {\it obvious correctness} and {\it efficiency} is to make
 the type checker and normalizer use a
-Weak-Head Normal Form (WHNF) grammar. Head constructors of a WHNF
+Weak Head Normal Form (WHNF) grammar. Head constructors of a WHNF
 contain a closure, often represented as unevaluated expressions and the
 environment of WHNF's captured by the closure. Unfortunately, this
 introduces a new compromise of {\it dependence}, namely the dependence
@@ -135,22 +130,22 @@ values of all other types as WHNF's in an initial environment.
 
 The motivation for our work is to implement an obviously correct,
 efficient, and small dependent type checker by exploiting
-expressionless weak-head normal forms. We will describe this
+expressionless weak head normal forms. We will describe this
 motivation in detail in \refsec{motivation}. However, we are also
 interested in formalizing the consistency of such a dependent type
 theory. While such a formalization is ongoing work, our
 {\bf main contributions} are formalized for G{\"o}del's System T:
 
 \begin{itemize}
-\item A grammar of expressionless WHNF's containing values for all
-  types in the language, a small grammar of expressions only
-  containing values for function types, and an initial environment of
-  WHNF's exposing values for non-function types.
+\item A grammar of expressionless WHNF's containing values for {\it all
+  types} in the language, a small grammar of expressions only
+  containing values for {\it function types}, and an initial environment of
+  WHNF's exposing values for {\it non-function types}.
 \item A termination proof of normalizing expressions to WHNF, which is
-  a corollary of a weak-head hereditary substitution proof (this
+  a corollary of a weak head hereditary substitution proof (this
   normalizer and hereditary substitution would be used in typing rules
   like application in a dependently typed setting.)
-\item A decidability proof of a weak-head converbility relation that
+\item A decidability proof of a weak head converbility relation that
   incrementally reduces closures only after a syntactic equality check
   fails (this converbility relation would be used in the conversion
   rule in a dependently typed setting.)
@@ -161,7 +156,7 @@ theory. While such a formalization is ongoing work, our
 \section{Dependent Type Checking}
 \label{sec:motivation}
 
-The motivation for weak-head normal forms in dependent type theory is
+The motivation for weak head normal forms in dependent type theory is
 to strike a balance between obvious correctness and efficiency in the
 implementation of the type checker. 
 
@@ -236,8 +231,8 @@ reasonably efficient to execute.
 Below we consider 4 different Haskell implementations of type checking
 function application. The 4 implementations differ in the syntactic
 grammar used for types: First expressions, then normal forms, then
-weak-head normal forms with expression closures, and finally our novel
-weak-head normal forms with expressionless closures.
+weak head normal forms with expression closures, and finally our novel
+weak head normal forms with expressionless closures.
 
 \paragraph{Expression Types}
 
@@ -263,19 +258,19 @@ implementation of \texttt{infer}, what the conversion function
 \texttt{(==)} does, and what the normalization function
 \texttt{norm} does. Because the grammar of expressions is so flexible,
 we can never be sure if a given expression is in normal form,
-weak-head normal form, or if the head position is a redex.
+weak head normal form, or if the head position is a redex.
 
 The easiest way to get the implementation correct is to make
 \texttt{norm} compute to full normal form. This way,
 conversion \texttt{(==)} can be a simple syntactic equality. The
 (albeit more complex) implementation makes \texttt{norm} compute only
-to weak-head normal form, and conversion \texttt{(==)} first check
+to weak head normal form, and conversion \texttt{(==)} first check
 syntactic equality, and then compute away redexes if syntactic
 equality fails. Whatever normal form we compute to, we need to make
 sure that all cases of \texttt{infer} do it so that we can
 successfully match against \texttt{Pi \_A \_B}.
 
-Why is it a good idea to prefer weak-head normal forms over normal
+Why is it a good idea to prefer weak head normal forms over normal
 forms? The normal forms can get quite large! Consider type checking
 the application case where both the type of the argument (\texttt{\_A'})
 and the domain (\texttt{\_A}) are the finite set type
@@ -435,7 +430,7 @@ data Wh = Type | Nat | Fin Env Exp
 data Ne = ...
 \end{verbatim}
 
-In the weak-head normal form type (\texttt{Wh}) above, all
+In the weak head normal form type (\texttt{Wh}) above, all
 constructors with arguments contain a closed environment of WHNF's,
 along with unevaluated expressions delayed by the closure. 
 Now let's see how \texttt{infer} works with grammatically enforced
@@ -491,7 +486,7 @@ data Ne = ...
 
 The \texttt{infer} function is similar to the WHNF with expressions
 version, except we rename \texttt{eval} to \texttt{hsub} (which is now a
-weak-head hereditary substitution). Additionally, the argument
+weak head hereditary substitution). Additionally, the argument
 \texttt{a} is now normalized in the monad, so its variables can be
 looked up in an initial environment similar to the one in the normal
 forms section.
