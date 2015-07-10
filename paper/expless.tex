@@ -567,7 +567,7 @@ opposed to terms for all types in the WHNF core language!
 
 Below we explain what an expressionless WHNF
 architecture means for G{\"o}del's System T.
-Additionally, we provide an overview of the primary properties that we
+Additionally, we provide an overview of the formal properties that we
 wish to hold for the system, and motivate the properties by their roles in a
 dependently typed setting. Subsequent sections present proofs of
 that these properties hold, and additional lemmas needed for those
@@ -714,13 +714,14 @@ its typing rules are in \reffig{type:wh}.
 \alt <env> `,' <wh>
 \end{grammar}
 
-We have a special typing judgement for closures,
+We have a distinct typing judgement for closures,
 $\typk{\sigma / b}{A}{B}$. Note that the long implication arrow is
 part of the judgement syntax, and is not a type in our language. The
 closure judgement syntax conveys that the closure morally
 behaves like a function, meaning the environment has has values for
 all types in the closure body except a value of type $A$.
 
+\subsection{Formal Properties}
 
 \begin{figure}[t!]
 \caption{
