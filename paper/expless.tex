@@ -65,6 +65,7 @@
 \newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
 \newcommand{\refsec}[1]{Section \ref{sec:#1}}
+\newcommand{\reffig}[1]{Figure \ref{fig:#1}}
 
 \begin{document}
 
@@ -589,7 +590,8 @@ facing surface language. Because many algorithms are written for the
 surface langauge, such as type checking, it is beneficial to make it
 small. To this end, expressions only contain values for function types
 (lambdas and application), and values for all other types are
-referenced using variables.
+referenced using variables. The grammar of expressions is below, and
+its typing rules are in \reffig{type:exp}.
 
 \begin{grammar}
 <exp> ::= <var> 
@@ -654,20 +656,36 @@ System F, where universal quantification is possible.
 &\con{rec} : \forall C.~ \nat \arr C \arr (C \arr C) \arr C
 \end{align*}
 
+\paragraph{Normal Forms}
+Although we would like to maintain terms in WHNF if possible, when
+comparing WHNF's for $\beta$-equality they must be fully evaluated
+to normal form in the worst case. The grammar of normal forms is
+mutually defines normal form values and neutral terms in the standard
+way, where a neutral term is a variable or an elimination of another
+neutral term. The grammar of normal forms is below, and
+its typing rules are in \reffig{type:nf}.
 
-\begin{figure}[t!]
-\caption{
-The syntactic grammar of expressions.
-}
 \begin{grammar}
-<exp> ::= <var> 
-\alt `\(\lambda\)' <ebind>
-\alt <exp> <exp>
+<nf> ::= <ne> 
+\alt `zero'
+\alt `suc' <nf>
+\alt `\(\lambda\)' <bind>
 
-<ebind> ::= <exp> 
+<ne> ::= <var> 
+\alt <ne> <nf>
+\alt `rec' <ne> `of' <nf> `else' <bind>
+
+<bind> ::= <nf> 
 \end{grammar}
-\label{fig:gram:exp}
-\end{figure}
+
+Once again we use de Bruijn notation for variables, but note that
+there are now 2 binding positions. The first is still in the lambda
+body, but we also have a binding position for the successor case of
+primitive recursion. We could have used the typing rules to require a
+function there instead, but we prefer to keep the typing rules
+modular (meaning that the natural number elimination rule does not
+depend on the function type).
+
 
 \begin{figure}[t!]
 \caption{
@@ -689,25 +707,6 @@ The syntactic grammar of weak head normal forms.
 \alt <env> `,' <wh>
 \end{grammar}
 \label{fig:gram:wh}
-\end{figure}
-
-\begin{figure}[t!]
-\caption{
-The syntactic grammar of normal forms.
-}
-\begin{grammar}
-<nf> ::= <ne> 
-\alt `zero'
-\alt `suc' <nf>
-\alt `\(\lambda\)' <bind>
-
-<ne> ::= <var> 
-\alt <ne> <nf>
-\alt `rec' <ne> `of' <nf> `else' <bind>
-
-<bind> ::= <nf> 
-\end{grammar}
-\label{fig:gram:nf}
 \end{figure}
 
 \begin{figure}[t!]
