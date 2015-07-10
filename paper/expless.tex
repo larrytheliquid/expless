@@ -54,7 +54,7 @@
 
 \newcommand{\typk}[3]{\Gamma \turn{K}  #1 \asc #2 \implies #3}
 
-\newcommand{\typv}[2]{\Phi \turn{V}  #1 \asc #2}
+\newcommand{\typv}[3]{#1 \turn{V}  #2 \asc #3}
 
 \newcommand{\typwh}[2]{\ctypwh{\Gamma}{#1}{#2}}
 \newcommand{\ctypwh}[3]{#1 \turn{Wh}  #2 \asc #3}
@@ -691,7 +691,7 @@ depend on the function type).
 We use a closure-based representation of weak head normal forms. What
 sets our apart from others is that it is {\it expressionless}. The
 weak head grammar is similar to the normal form grammar, except
-binding positions contain closures. A closure is an environment of
+the former binding positions are now closures. A closure is an environment of
 closed-over weak head normal forms, and a weak head normal form
 (rather than an expression). The grammar of weak head normal forms is below, and
 its typing rules are in \reffig{type:wh}.
@@ -714,6 +714,12 @@ its typing rules are in \reffig{type:wh}.
 \alt <env> `,' <wh>
 \end{grammar}
 
+We have a special typing judgement for closures,
+$\typk{\sigma / b}{A}{B}$. Note that the long implication arrow is
+part of the judgement syntax, and is not a type in our language. The
+closure judgement syntax conveys that the closure morally
+behaves like a function, meaning the environment has has values for
+all types in the closure body except a value of type $A$.
 
 
 \begin{figure}[t!]
@@ -904,15 +910,15 @@ $$
 $$
 \infer
   []
-  {\typv{\emp}{\emp}}
+  {\typv{\Phi}{\emp}{\emp}}
 {
 }
 \quad
 \infer
   []
-  {\typv{\sigma, a}{\Gamma, A}}
+  {\typv{\Phi}{\sigma, a}{\Gamma, A}}
 {
-  \typv{\sigma}{\Gamma}
+  \typv{\Phi}{\sigma}{\Gamma}
   &
   \ctypwh{\Phi}{a}{A}
 }
@@ -923,7 +929,7 @@ $$
   []
   {\typk{\sigma / b}{A}{B}}
 {
-  \typv{\sigma}{\Gamma}
+  \typv{\Gamma}{\sigma}{\Phi}
   &
   \ctypwh{\Phi, A}{b}{B}
 }
