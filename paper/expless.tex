@@ -18,8 +18,9 @@
 \floatstyle{boxed}
 \restylefloat{figure}
 
-\def\turn{\vdash}
+\def\turnstyle{\vdash}
 \def\conv{\approx}
+\def\asc{:}
 
 \def\cross{\times}
 \def\dfn{\triangleq}
@@ -35,9 +36,12 @@
 \newcommand{\con}[1]{\textmd{#1}}
 \newcommand{\fun}[1]{\textmd{#1}}
 
-\newcommand{\asc}[1]{:^\con{#1}}
+\newcommand{\turn}[1]{\turnstyle^\con{#1}}
 
-%% \newcommand{\type}[1]{\Gamma \turn  #1}
+\newcommand{\typr}[2]{\Gamma \turn{R}  #1 \asc #2}
+
+\newcommand{\type}[2]{\Gamma \turn{E}  #1 \asc #2}
+\newcommand{\ctype}[3]{#1 \turn{E}  #2 \asc #3}
 
 \newcommand{\cir}[1]{\textcircled{\raisebox{-0.9pt}{#1}}}
 
@@ -193,11 +197,11 @@ that arise in dependent type checking.
 
 $$
 \infer[]
-  {\Gamma \turn f~a : B[a]}
+  {\Gamma \turnstyle f~a : B[a]}
 {
-  \Gamma \turn f : \Pi~A~B
+  \Gamma \turnstyle f : \Pi~A~B
   &
-  \Gamma \turn a : A
+  \Gamma \turnstyle a : A
 }
 $$
 
@@ -231,9 +235,9 @@ problems under the rug by via a conversion rule.
 
 $$
 \infer[]
-  {\Gamma \turn a : B}
+  {\Gamma \turnstyle a : B}
 {
-  \Gamma \turn a : A
+  \Gamma \turnstyle a : A
   &
   A \conv B
 }
@@ -626,11 +630,26 @@ exposed as variables referring to values in an initial environment.
 $$
 \infer
   []
-  {B}
+  {\type{x}{A}}
 {
-  (f : A \arr B)
+  \typr{x}{A}
+}
+\quad
+\infer
+  []
+  {\type{\lambda b}{A \arr B}}
+{
+  \ctype{\Gamma, A}{b}{B}
+}
+$$
+$$
+\infer
+  []
+  {\type{f~a}{B}}
+{
+  \type{f}{A \arr B}
   &
-  (a : A)
+  \type{a}{A}
 }
 $$
 \label{fig:type:exp}
